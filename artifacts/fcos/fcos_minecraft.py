@@ -1,97 +1,139 @@
 auto_scale_lr = dict(base_batch_size=16, enable=False)
 backend_args = None
+checkpoint_config = dict(interval=1)
 data = dict(
     samples_per_gpu=2,
     test=dict(
-        ann_file='datasets/minecraft/annotations/annotations_test.json',
-        data_root='datasets/minecraft/',
+        ann_file='datasets/minecraft/annotations/instances_val.json',
+        img_prefix='datasets/minecraft/images/val/',
         metainfo=dict(
             classes=(
-                'creeper',
-                'zombie',
-                'diamond_ore',
-                'player',
-                'pig',
                 'cow',
-                'sheep',
+                'zombie',
+                'creeper',
+                'skeleton',
+                'pig',
             )),
         pipeline=[
+            dict(type='LoadImageFromFile'),
             dict(
-                file_client_args=dict(backend='disk'),
-                type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                512,
-                512,
-            ), type='Resize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
+                flip=False,
+                img_scale=(
+                    512,
+                    512,
                 ),
-                type='PackDetInputs'),
+                transforms=[
+                    dict(keep_ratio=True, type='Resize'),
+                    dict(type='RandomFlip'),
+                    dict(
+                        mean=[
+                            102.9801,
+                            115.9465,
+                            122.7717,
+                        ],
+                        std=[
+                            1.0,
+                            1.0,
+                            1.0,
+                        ],
+                        to_rgb=False,
+                        type='Normalize'),
+                    dict(size_divisor=32, type='Pad'),
+                    dict(keys=[
+                        'img',
+                    ], type='ImageToTensor'),
+                    dict(keys=[
+                        'img',
+                    ], type='Collect'),
+                ],
+                type='MultiScaleFlipAug'),
         ],
         type='CocoDataset'),
     train=dict(
-        ann_file='datasets/minecraft/annotations/annotations_train.json',
-        data_root='datasets/minecraft/',
+        ann_file='datasets/minecraft/annotations/instances_train.json',
+        img_prefix='datasets/minecraft/images/train/',
         metainfo=dict(
             classes=(
-                'creeper',
-                'zombie',
-                'diamond_ore',
-                'player',
-                'pig',
                 'cow',
-                'sheep',
+                'zombie',
+                'creeper',
+                'skeleton',
+                'pig',
             )),
         pipeline=[
-            dict(
-                file_client_args=dict(backend='disk'),
-                type='LoadImageFromFile'),
+            dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(keep_ratio=True, scale=(
+            dict(img_scale=(
                 512,
                 512,
-            ), type='Resize'),
-            dict(prob=0.5, type='RandomFlip'),
-            dict(type='PackDetInputs'),
+            ), keep_ratio=True, type='Resize'),
+            dict(flip_ratio=0.5, type='RandomFlip'),
+            dict(
+                mean=[
+                    102.9801,
+                    115.9465,
+                    122.7717,
+                ],
+                std=[
+                    1.0,
+                    1.0,
+                    1.0,
+                ],
+                to_rgb=False,
+                type='Normalize'),
+            dict(size_divisor=32, type='Pad'),
+            dict(type='DefaultFormatBundle'),
+            dict(keys=[
+                'img',
+                'gt_bboxes',
+                'gt_labels',
+            ], type='Collect'),
         ],
         type='CocoDataset'),
     val=dict(
-        ann_file='datasets/minecraft/annotations/annotations_valid.json',
-        data_root='datasets/minecraft/',
+        ann_file='datasets/minecraft/annotations/instances_val.json',
+        img_prefix='datasets/minecraft/images/val/',
         metainfo=dict(
             classes=(
-                'creeper',
-                'zombie',
-                'diamond_ore',
-                'player',
-                'pig',
                 'cow',
-                'sheep',
+                'zombie',
+                'creeper',
+                'skeleton',
+                'pig',
             )),
         pipeline=[
+            dict(type='LoadImageFromFile'),
             dict(
-                file_client_args=dict(backend='disk'),
-                type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                512,
-                512,
-            ), type='Resize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
+                flip=False,
+                img_scale=(
+                    512,
+                    512,
                 ),
-                type='PackDetInputs'),
+                transforms=[
+                    dict(keep_ratio=True, type='Resize'),
+                    dict(type='RandomFlip'),
+                    dict(
+                        mean=[
+                            102.9801,
+                            115.9465,
+                            122.7717,
+                        ],
+                        std=[
+                            1.0,
+                            1.0,
+                            1.0,
+                        ],
+                        to_rgb=False,
+                        type='Normalize'),
+                    dict(size_divisor=32, type='Pad'),
+                    dict(keys=[
+                        'img',
+                    ], type='ImageToTensor'),
+                    dict(keys=[
+                        'img',
+                    ], type='Collect'),
+                ],
+                type='MultiScaleFlipAug'),
         ],
         type='CocoDataset'),
     workers_per_gpu=2)
@@ -109,52 +151,41 @@ env_cfg = dict(
     cudnn_benchmark=False,
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+evaluation = dict(interval=1, metric='bbox')
 fp16 = dict(loss_scale='dynamic')
+img_norm_cfg = dict(
+    mean=[
+        102.9801,
+        115.9465,
+        122.7717,
+    ], std=[
+        1.0,
+        1.0,
+        1.0,
+    ], to_rgb=False)
 launcher = 'none'
-load_from = None
+load_from = 'checkpoints/fcos_r50_caffe_fpn_gn-head_1x_coco.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-metainfo = dict(
-    classes=(
-        'creeper',
-        'zombie',
-        'diamond_ore',
-        'player',
-        'pig',
-        'cow',
-        'sheep',
-    ))
+metainfo = dict(classes=(
+    'cow',
+    'zombie',
+    'creeper',
+    'skeleton',
+    'pig',
+))
 model = dict(
-    backbone=dict(
-        depth=50,
-        frozen_stages=1,
-        init_cfg=dict(
-            checkpoint='open-mmlab://detectron/resnet50_caffe',
-            type='Pretrained'),
-        norm_cfg=dict(requires_grad=False, type='BN'),
-        norm_eval=True,
-        num_stages=4,
-        out_indices=(
-            0,
-            1,
-            2,
-            3,
-        ),
-        style='caffe',
-        type='ResNet'),
+    backbone=dict(depth=50, type='ResNet'),
     bbox_head=dict(
         feat_channels=256,
         in_channels=256,
-        loss_bbox=dict(loss_weight=1.0, type='IoULoss'),
-        loss_centerness=dict(
-            loss_weight=1.0, type='CrossEntropyLoss', use_sigmoid=True),
         loss_cls=dict(
             alpha=0.25,
             gamma=2.0,
             loss_weight=1.0,
             type='FocalLoss',
             use_sigmoid=True),
-        num_classes=7,
+        num_classes=5,
         stacked_convs=4,
         strides=[
             8,
@@ -164,44 +195,23 @@ model = dict(
             128,
         ],
         type='FCOSHead'),
-    data_preprocessor=dict(
-        bgr_to_rgb=False,
-        mean=[
-            102.9801,
-            115.9465,
-            122.7717,
-        ],
-        pad_size_divisor=32,
-        std=[
-            1.0,
-            1.0,
-            1.0,
-        ],
-        type='DetDataPreprocessor'),
     neck=dict(
-        add_extra_convs='on_output',
+        end_level=2,
         in_channels=[
             256,
             512,
             1024,
-            2048,
         ],
-        num_outs=5,
-        out_channels=256,
-        relu_before_extra_convs=True,
-        start_level=1,
+        num_outs=4,
+        out_channels=128,
+        start_level=0,
         type='FPN'),
-    test_cfg=dict(
-        max_per_img=100,
-        min_bbox_size=0,
-        nms=dict(iou_threshold=0.5, type='nms'),
-        nms_pre=1000,
-        score_thr=0.05),
     type='FCOS')
-num_classes = 7
 optim_wrapper = dict(
     optimizer=dict(lr=0.02, momentum=0.9, type='SGD', weight_decay=0.0001),
     type='OptimWrapper')
+optimizer = dict(lr=0.01, momentum=0.9, type='SGD', weight_decay=0.0001)
+optimizer_config = dict(grad_clip=None)
 param_scheduler = [
     dict(
         begin=0, by_epoch=False, end=500, start_factor=0.001, type='LinearLR'),
@@ -217,6 +227,7 @@ param_scheduler = [
         type='MultiStepLR'),
 ]
 resume = False
+runner = dict(max_epochs=12, type='EpochBasedRunner')
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
@@ -255,21 +266,38 @@ test_evaluator = dict(
     metric='bbox',
     type='CocoMetric')
 test_pipeline = [
-    dict(file_client_args=dict(backend='disk'), type='LoadImageFromFile'),
-    dict(keep_ratio=True, scale=(
-        512,
-        512,
-    ), type='Resize'),
-    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='LoadImageFromFile'),
     dict(
-        meta_keys=(
-            'img_id',
-            'img_path',
-            'ori_shape',
-            'img_shape',
-            'scale_factor',
+        flip=False,
+        img_scale=(
+            512,
+            512,
         ),
-        type='PackDetInputs'),
+        transforms=[
+            dict(keep_ratio=True, type='Resize'),
+            dict(type='RandomFlip'),
+            dict(
+                mean=[
+                    102.9801,
+                    115.9465,
+                    122.7717,
+                ],
+                std=[
+                    1.0,
+                    1.0,
+                    1.0,
+                ],
+                to_rgb=False,
+                type='Normalize'),
+            dict(size_divisor=32, type='Pad'),
+            dict(keys=[
+                'img',
+            ], type='ImageToTensor'),
+            dict(keys=[
+                'img',
+            ], type='Collect'),
+        ],
+        type='MultiScaleFlipAug'),
 ]
 train_cfg = dict(max_epochs=50, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
@@ -296,14 +324,33 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 train_pipeline = [
-    dict(file_client_args=dict(backend='disk'), type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(keep_ratio=True, scale=(
+    dict(img_scale=(
         512,
         512,
-    ), type='Resize'),
-    dict(prob=0.5, type='RandomFlip'),
-    dict(type='PackDetInputs'),
+    ), keep_ratio=True, type='Resize'),
+    dict(flip_ratio=0.5, type='RandomFlip'),
+    dict(
+        mean=[
+            102.9801,
+            115.9465,
+            122.7717,
+        ],
+        std=[
+            1.0,
+            1.0,
+            1.0,
+        ],
+        to_rgb=False,
+        type='Normalize'),
+    dict(size_divisor=32, type='Pad'),
+    dict(type='DefaultFormatBundle'),
+    dict(keys=[
+        'img',
+        'gt_bboxes',
+        'gt_labels',
+    ], type='Collect'),
 ]
 val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
