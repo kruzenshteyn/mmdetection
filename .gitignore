@@ -116,6 +116,8 @@ data
 docs/modelzoo_statistics.md
 mmdet/.mim
 work_dirs/
+/demo
+/vis
 
 # Pytorch
 *.pth
@@ -126,7 +128,12 @@ work_dirs/
 /datasets/minecraft/test
 /datasets/minecraft/train
 /datasets/minecraft/valid
-/artifacts/inference
+/artifacts/inference/videos
 *.mp4
 *.mp4
 *.pt
+/mmdet
+/artifacts/inference/fcos
+/.circleci
+/.circleci
+/.dev_scripts
