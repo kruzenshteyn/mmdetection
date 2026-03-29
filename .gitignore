@@ -139,3 +139,5 @@ work_dirs/
 /.dev_scripts
 /demo
 /mmdet
+*.cache
+datasets/minecraft/video.mp4
