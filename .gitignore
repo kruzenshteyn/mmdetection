@@ -137,3 +137,5 @@ work_dirs/
 /.circleci
 /.circleci
 /.dev_scripts
+/demo
+/mmdet
