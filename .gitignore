@@ -141,3 +141,7 @@ work_dirs/
 /mmdet
 *.cache
 datasets/minecraft/video.mp4
+/docker
+/preds
+/projects
+/tests
