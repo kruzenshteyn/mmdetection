@@ -1,7 +1,9 @@
 path: ./datasets/minecraft  # или абсолютный путь
-train: train
-val: valid
-test: test
+train: ./train
+val: ./valid
+test: ./test
 
-nc: 6 # ваше количество классов
-names: ['cow', 'zombie', 'creeper', 'skeleton', 'spider', 'pig']
+nc: 18
+names: ['minecraft-mobs', 'bee', 'chicken', 'cow', 'creeper', 'enderman', 'fox', 'frog', 
+        'ghast', 'goat', 'llama', 'pig', 'sheep', 'skeleton', 'spider', 
+        'turtle', 'wolf', 'zombie']

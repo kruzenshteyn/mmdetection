@@ -22,3 +22,4 @@ readme = """# Minecraft mobs detection: FCOS vs YOLOv8
 
 ## Как запустить
 1. Подготовить датасет в форматах COCO (для MMDetection) и YOLO (для Ultralytics).
+

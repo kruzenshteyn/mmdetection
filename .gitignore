@@ -125,3 +125,6 @@ work_dirs/
 /datasets/minecraft/test
 /datasets/minecraft/train
 /datasets/minecraft/valid
+/artifacts/inference
+*.mp4
+*.mp4
