@@ -129,3 +129,4 @@ work_dirs/
 /artifacts/inference
 *.mp4
 *.mp4
+*.pt
