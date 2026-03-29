@@ -6,6 +6,7 @@ readme = """# Minecraft mobs detection: FCOS vs YOLOv8
 ## Файлы dataset удалены из репозитория
 Ссылка на скачивание https://disk.yandex.ru/d/ezpvkg_cdDJnNA
 
+Обязательно!!! переделать dataset в формат yolo. coco_to_yolo
 
 ## Структура артефактов
 - artifacts/fcos/ — логи и веса FCOS (log.json, epoch_*.pth, latest.pth)
